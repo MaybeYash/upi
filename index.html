@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay | Upier</title>
+    <style>
+        /* Example styles, adjust as needed */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0070f3;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .qrsvg {
+            text-align: center;
+        }
+
+        .computerprompt, .payingtext, .vpatext {
+            text-align: center;
+        }
+
+        .paybutton {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0070f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .paybutton:hover {
+            background-color: #0054d3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pay</h1>
+    </header>
+    <main>
+        <section class="content pay">
+            <div id="qr-code" class="qrsvg"></div>
+            <p class="computerprompt">If you are on PC, scan it with any UPI App to Pay</p>
+            <p class="payingtext" id="amountText"></p>
+            <p class="payingtext">to</p>
+            <p class="payingtext vpatext" id="vpaText"></p>
+            <div style="text-align: center; margin-top: 20px;">
+                <a id="payButton" class="paybutton" href="#" target="_blank" rel="noopener noreferrer">P A Y</a>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p style="text-align: center;">&copy; 2024 Upier. All rights reserved.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/react-qr-code@2.0.1/dist/react-qr-code.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Replace with logic to fetch router.query values (if from server) or provide default values
+            const routerQuery = {
+                vpa: "samplevpa@upi",
+                am: "100" // Replace with actual amount or handle null case
+            };
+
+            const deeplink = `upi://pay?pn=withUpier&pa=${routerQuery.vpa}&cu=INR${routerQuery.am ? `&am=${routerQuery.am.includes(".") ? routerQuery.am : `${routerQuery.am}.0`}` : ""}`;
+
+            // Display QR Code
+            new QRCode(document.getElementById("qr-code"), {
+                text: deeplink,
+                width: 200,
+                height: 200
+            });
+
+            // Update text content
+            document.getElementById("amountText").textContent = `You are paying${routerQuery.am ? ` ₹ ${routerQuery.am}` : ""}`;
+            document.getElementById("vpaText").textContent = routerQuery.vpa;
+
+            // Add event listener to Pay button
+            document.getElementById("payButton").addEventListener("click", function (event) {
+                // Replace with your analytics tracking or any other action
+                event.preventDefault();
+                console.log("Clicked on Pay button");
+                // Example analytics tracking
+                gtag.event({
+                    action: "clicked_pay_button",
+                    category: "engagement",
+                    label: `Vpa: ${routerQuery.vpa} - Amount: ${routerQuery.am || "null"}`,
+                    value: `Clicked on Deep Link by user`
+                });
+
+                // Open deep link
+                window.open(deeplink, "_blank");
+            });
+        });
+    </script>
+</body>
+</html>
