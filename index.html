@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay | Upier</title>
+    <style>
+        /* Example styles, adjust as needed */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0070f3;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .qrsvg {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .computerprompt, .payingtext, .vpatext {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .paybutton {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0070f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .paybutton:hover {
+            background-color: #0054d3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pay</h1>
+    </header>
+    <main>
+        <section class="content pay">
+            <div id="qr-code" class="qrsvg"></div>
+            <p class="computerprompt">If you are on PC, scan it with any UPI App to Pay</p>
+            <p class="payingtext" id="amountText"></p>
+            <p class="payingtext">to</p>
+            <p class="payingtext vpatext" id="vpaText"></p>
+            <div style="text-align: center; margin-top: 20px;">
+                <a id="payButton" class="paybutton" href="#" target="_blank" rel="noopener noreferrer">P A Y</a>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p style="text-align: center;">&copy; 2024 Upier. All rights reserved.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/react-qr-code@2.0.1/dist/react-qr-code.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Simulated router query values
+            const router = {
+                query: {
+                    vpa: "samplevpa@upi",
+                    am: "100"
+                }
+            };
+
+            const deeplink = `upi://pay?pn=withUpier&pa=${router.query.vpa}&cu=INR${router.query.am ? `&am=${router.query.am.includes(".") ? router.query.am : `${router.query.am}.0`}` : ""}`;
+
+            // Display QR Code using React QR Code library
+            new QRCode(document.getElementById("qr-code"), {
+                value: deeplink,
+                size: 200,
+                className: "qrsvg"
+            });
+
+            // Update text content
+            document.getElementById("amountText").textContent = `You are paying${router.query.am ? ` ₹ ${router.query.am}` : ""}`;
+            document.getElementById("vpaText").textContent = router.query.vpa;
+
+            // Analytics event function (simulated)
+            const gtag = {
+                event: function(data) {
+                    console.log(data);
+                }
+            };
+
+            // Add event listener to Pay button
+            document.getElementById("payButton").addEventListener("click", function (event) {
+                event.preventDefault();
+                
+                // Simulate gtag event tracking
+                gtag.event({
+                    action: "clicked_pay_button",
+                    category: "engagement",
+                    label: `Vpa: ${router.query.vpa} - Amount: ${router.query.am || "null"}`,
+                    value: `Clicked on Deep Link by user`
+                });
+
+                // Open deep link
+                window.open(deeplink, "_blank");
+            });
+        });
+    </script>
+</body>
+</html>
